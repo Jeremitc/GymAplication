@@ -2,4 +2,4 @@ Copyright (C) 2025 JeremiTc
 
 All rights reserved.
 
-This software and its source code are the exclusive property of [Your Name or Company Name]. Unauthorized copying, distribution, modification, or resale of this software
+This software and its source code are the exclusive property of JeremiTC. Unauthorized copying, distribution, modification, or resale of this software

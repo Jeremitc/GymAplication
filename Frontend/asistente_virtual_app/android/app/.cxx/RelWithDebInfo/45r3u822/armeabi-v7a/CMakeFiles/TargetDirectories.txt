@@ -1,2 +1,0 @@
-C:/Users/Usuario/Desktop/Proyectos para mi/Gym aplicacion/GymAplication/Frontend/asistente_virtual_app/android/app/.cxx/RelWithDebInfo/45r3u822/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/Users/Usuario/Desktop/Proyectos para mi/Gym aplicacion/GymAplication/Frontend/asistente_virtual_app/android/app/.cxx/RelWithDebInfo/45r3u822/armeabi-v7a/CMakeFiles/rebuild_cache.dir

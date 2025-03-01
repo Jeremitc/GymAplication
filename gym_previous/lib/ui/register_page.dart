@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../constants.dart';
+import '../api_service.dart';
 import 'login_page.dart';
 
 class Register extends StatefulWidget {
@@ -11,36 +11,77 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
+  final ApiService apiService = ApiService();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
+
+  void _registrar() async {
+    if (_usernameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Todos los campos son obligatorios')),
+      );
+      return;
+    }
+
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(_emailController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ingrese un email válido')),
+      );
+      return;
+    }
+
+    try {
+      await apiService.registrarUsuario(
+        _usernameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuario registrado correctamente')),
+      );
+
+      Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          elevation: 0.0,
-          backgroundColor: Constants.primaryColor,
-          title: Text(
-            "Página de Inicio de Sesión",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: Constants.primaryColor,
+        title: const Text(
+          "Registro de Usuario",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage(
-                      "assets/images/pre_inicio/registro_2.jpg"
-                  ),
-                  fit: BoxFit.cover,
-                  opacity: 0.5
-              )
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/pre_inicio/registro_2.jpg"),
+            fit: BoxFit.cover,
+            opacity: 0.5,
           ),
-          child: Center(
+        ),
+        child: Center(
+          child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Card(
                   color: Constants.primaryColor,
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.all(10.0),
                     child: Text(
                       "Registro",
@@ -53,116 +94,100 @@ class _RegisterState extends State<Register> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                CreateLabelWithTextField(campos: ["Usuario", "Contraseña"]),
-                SizedBox(height: 25),
+                const SizedBox(height: 20),
                 Padding(
-                  padding: EdgeInsets.only(right: 110, left: 110),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: Constants.secondaryColor,
-                        borderRadius: BorderRadius.all(Radius.elliptical(10, 10))
-                    ),
-                    padding: EdgeInsets.all(5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Registrarse",
-                          style: TextStyle(color: Colors.white, fontSize: 25),
-                        ),
-                        IconButton(
-                            onPressed: (){
-                              setState(() {
-                                // Will be implement later
-                                //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Register()));
-                              });
-                            },
-                            icon: Icon(Icons.supervised_user_circle, size: 30, color: Colors.white,)
-                        )
-                      ],
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: TextField(
+                    controller: _usernameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Usuario',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
                     ),
                   ),
                 ),
-                SizedBox(height: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      setState(() {
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Login()));
-                        Navigator.pop(context);
-                      });
-                    },
-                    child: Text("¿Tienes una cuenta? Inicia Sesión")
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(
+                      labelText: 'Correo Electrónico*',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                 ),
-                SizedBox(height: 30,)
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40),
+                  child: TextField(
+                    controller: _passwordController,
+                    obscureText: _obscureText,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: const OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(_obscureText ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            _obscureText = !_obscureText;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 110),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Constants.secondaryColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _registrar,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.all(15),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Registrarse",
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          SizedBox(width: 10),
+                          Icon(Icons.person_add, color: Colors.white),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "¿Tienes una cuenta? Inicia Sesión",
+                    style: TextStyle(color: Constants.primaryColor, fontSize: 16),
+                  ),
+                ),
+                const SizedBox(height: 30),
               ],
             ),
           ),
-        )
-    );
-  }
-}
-
-class CreateLabelWithTextField extends StatelessWidget {
-  final List<String> campos;
-  const CreateLabelWithTextField({super.key, required this.campos});
-
-  @override
-  Widget build(BuildContext context){
-    return Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: 5, bottom: 5, left: 30),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              campos[0],
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
         ),
-        Padding(
-          padding: EdgeInsets.only(left: 40, right: 40),
-          child: TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: "Ingrese su ${campos[0]}",
-              filled: true,
-              fillColor: Colors.white,
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(top: 5, bottom: 5, left: 30),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              campos[1],
-              style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-          ),
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 40, right: 40),
-          child: TextField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: "Ingrese su ${campos[1]}",
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              obscureText: true
-          ),
-        )
-      ],
+      ),
     );
   }
 }

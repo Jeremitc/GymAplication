@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-
 import '../Contactoform/formulario.dart';
 import '../Examplegym/examplegym.dart';
 import '../Footer/footer.dart';
